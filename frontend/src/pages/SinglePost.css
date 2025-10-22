@@ -142,12 +142,15 @@
 .post-engagement {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
   padding-top: 1.5rem;
   border-top: 2px solid #e2e8f0;
+  flex-wrap: wrap;
 }
 
-.like-btn {
+.like-btn,
+.bookmark-btn,
+.report-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -161,7 +164,9 @@
   transition: all 0.3s ease;
 }
 
-.like-btn:hover:not(:disabled) {
+.like-btn:hover:not(:disabled),
+.bookmark-btn:hover:not(:disabled),
+.report-btn:hover:not(:disabled) {
   border-color: #667eea;
   color: #667eea;
   transform: translateY(-2px);
@@ -173,7 +178,20 @@
   color: #e53e3e;
 }
 
-.like-btn:disabled {
+.bookmark-btn.bookmarked {
+  background: #fef3c7;
+  border-color: #fbbf24;
+  color: #92400e;
+}
+
+.report-btn {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.like-btn:disabled,
+.bookmark-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }

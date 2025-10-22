@@ -8,11 +8,13 @@ import { userAPI } from './services/api';
 // Components
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
+import EmailVerificationBanner from './components/EmailVerificationBanner';
 
 // Pages
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
 import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
 import SinglePost from './pages/SinglePost';
@@ -20,6 +22,7 @@ import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import Search from './pages/Search';
 import TagPosts from './pages/TagPosts';
+import Bookmarks from './pages/Bookmarks';
 
 import './App.css';
 
@@ -29,21 +32,28 @@ function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('🔐 Auth state changed:', firebaseUser ? 'User logged in' : 'User logged out');
+      
       if (firebaseUser) {
         try {
+          console.log('📡 Fetching user profile from backend...');
           const response = await userAPI.getCurrentUser();
+          console.log('👤 Backend response:', response.data);
           
           if (response.data.exists) {
             setCurrentUser(response.data);
+            console.log('✅ User state set:', response.data.username);
           } else {
             // User exists in Firebase but not in database
+            console.warn('⚠️ User exists in Firebase but not in database');
             setCurrentUser(null);
           }
         } catch (error) {
-          console.error('Error fetching user:', error);
+          console.error('❌ Error fetching user:', error);
           setCurrentUser(null);
         }
       } else {
+        console.log('🚪 No Firebase user, clearing state');
         setCurrentUser(null);
       }
       setLoading(false);
@@ -66,12 +76,14 @@ function App() {
       <Router>
         <div className="App">
           <Navbar user={currentUser} />
+          <EmailVerificationBanner />
           
           <main className="app-content">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/search" element={<Search />} />
               <Route path="/tag/:tag" element={<TagPosts />} />
               <Route path="/user/:username" element={<Profile currentUser={currentUser} />} />
@@ -103,6 +115,16 @@ function App() {
                 element={
                   currentUser ? (
                     <EditProfile currentUser={currentUser} />
+                  ) : (
+                    <Navigate to="/login" />
+                  )
+                }
+              />
+              <Route
+                path="/bookmarks"
+                element={
+                  currentUser ? (
+                    <Bookmarks currentUser={currentUser} />
                   ) : (
                     <Navigate to="/login" />
                   )

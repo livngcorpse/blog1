@@ -23,7 +23,11 @@ const Login = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast.success('Logged in successfully!');
-      navigate('/');
+      
+      // Wait a moment for auth state to update
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
     } catch (error) {
       console.error('Login error:', error);
       toast.error(error.message || 'Failed to login');
@@ -64,6 +68,10 @@ const Login = () => {
           <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
+          
+          <div className="forgot-password-link">
+            <Link to="/forgot-password">Forgot password?</Link>
+          </div>
         </form>
 
         <p className="auth-footer">

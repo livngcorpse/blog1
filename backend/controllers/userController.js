@@ -124,7 +124,17 @@ exports.getCurrentUser = async (req, res) => {
     
     res.json({
       exists: true,
-      ...user.toObject(),
+      id: user._id,
+      _id: user._id,
+      username: user.username,
+      displayName: user.displayName,
+      email: user.email,
+      firebaseUid: user.firebaseUid,
+      bio: user.bio,
+      tagline: user.tagline,
+      profilePhoto: user.profilePhoto,
+      stats: user.stats,
+      createdAt: user.createdAt,
     });
   } catch (error) {
     console.error('Get current user error:', error);
@@ -196,12 +206,15 @@ exports.createOrUpdateProfile = async (req, res) => {
     res.json({
       message: 'Profile updated successfully',
       user: {
+        id: user._id,
         _id: user._id,
         username: user.username,
         displayName: user.displayName,
         bio: user.bio,
         tagline: user.tagline,
         profilePhoto: user.profilePhoto,
+        stats: user.stats,
+        createdAt: user.createdAt,
       },
     });
   } catch (error) {

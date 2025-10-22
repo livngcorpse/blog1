@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { postAPI, replyAPI } from '../services/api';
+import { postAPI, replyAPI, reportAPI, bookmarkAPI } from '../services/api';
 import UserAvatar from '../components/UserAvatar';
 import ReplyForm from '../components/ReplyForm';
 import ReplyThread from '../components/ReplyThread';
+import SocialShare from '../components/SocialShare';
+import ReportModal from '../components/ReportModal';
 import toast from 'react-hot-toast';
 import './SinglePost.css';
 
@@ -14,11 +17,16 @@ const SinglePost = ({ currentUser }) => {
   const [replies, setReplies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [repliesLoading, setRepliesLoading] = useState(true);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   useEffect(() => {
     fetchPost();
     fetchReplies();
-  }, [id]);
+    if (currentUser) {
+      checkBookmarkStatus();
+    }
+  }, [id, currentUser]);
 
   const fetchPost = async () => {
     try {
@@ -131,6 +139,34 @@ const SinglePost = ({ currentUser }) => {
     }
   };
 
+  const checkBookmarkStatus = async () => {
+    try {
+      const response = await bookmarkAPI.checkBookmark(id);
+      setIsBookmarked(response.data.bookmarked);
+    } catch (error) {
+      console.error('Failed to check bookmark status:', error);
+    }
+  };
+
+  const handleToggleBookmark = async () => {
+    if (!currentUser) {
+      toast.error('Please login to bookmark posts');
+      return;
+    }
+
+    try {
+      const response = await bookmarkAPI.toggleBookmark(id);
+      setIsBookmarked(response.data.bookmarked);
+      toast.success(response.data.message);
+    } catch (error) {
+      toast.error('Failed to toggle bookmark');
+    }
+  };
+
+  const handleReport = async (reportData) => {
+    await reportAPI.createReport(reportData);
+  };
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -212,12 +248,47 @@ const SinglePost = ({ currentUser }) => {
             <span className="icon">{post.hasLiked ? '❤️' : '🤍'}</span>
             <span>{post.likesCount} Likes</span>
           </button>
+
+          <button
+            className={`bookmark-btn ${isBookmarked ? 'bookmarked' : ''}`}
+            onClick={handleToggleBookmark}
+            disabled={!currentUser}
+            title={isBookmarked ? 'Remove bookmark' : 'Bookmark this post'}
+          >
+            <span className="icon">{isBookmarked ? '🔖' : '📑'}</span>
+            <span>{isBookmarked ? 'Saved' : 'Save'}</span>
+          </button>
+
+          {!isAuthor && currentUser && (
+            <button
+              className="report-btn"
+              onClick={() => setShowReportModal(true)}
+              title="Report this post"
+            >
+              <span className="icon">⚠️</span>
+              <span>Report</span>
+            </button>
+          )}
           
           <div className="engagement-stats">
             <span>💬 {post.repliesCount} Replies</span>
           </div>
         </div>
+
+        <SocialShare
+          url={window.location.href}
+          title={post.title}
+          description={post.excerpt}
+        />
       </article>
+
+      <ReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        onSubmit={handleReport}
+        itemType="post"
+        itemId={id}
+      />
 
       <section className="replies-section">
         <h2>Replies ({post.repliesCount})</h2>
