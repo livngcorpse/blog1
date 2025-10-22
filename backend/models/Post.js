@@ -25,11 +25,6 @@ const postSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   }],
-  mentions: [{
-    type: String,
-    trim: true,
-    lowercase: true,
-  }],
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

@@ -1,6 +1,5 @@
 const Reply = require('../models/Reply');
 const Post = require('../models/Post');
-const extractMentions = require('../utils/extractMentions');
 
 /**
  * Recursively build reply tree with nested children
@@ -112,14 +111,11 @@ exports.createReply = async (req, res) => {
     }
     
     // Create reply
-    const mentions = extractMentions(content);
-    
     const reply = new Reply({
       postId,
       parentReplyId: parentReplyId || null,
       authorId: req.user.id,
       content: content.trim(),
-      mentions,
     });
     
     await reply.save();

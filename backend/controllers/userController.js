@@ -122,10 +122,6 @@ exports.getCurrentUser = async (req, res) => {
       });
     }
     
-    // Check if user is admin
-    const adminUsername = process.env.ADMIN_USERNAME;
-    const isAdmin = adminUsername && user.username === adminUsername.toLowerCase();
-    
     res.json({
       exists: true,
       id: user._id,
@@ -137,10 +133,8 @@ exports.getCurrentUser = async (req, res) => {
       bio: user.bio,
       tagline: user.tagline,
       profilePhoto: user.profilePhoto,
-      themePreferences: user.themePreferences || { theme: 'default', mode: 'dark' },
       stats: user.stats,
       createdAt: user.createdAt,
-      isAdmin,
     });
   } catch (error) {
     console.error('Get current user error:', error);
@@ -163,7 +157,7 @@ exports.createOrUpdateProfile = async (req, res) => {
     const idToken = authHeader.split('Bearer ')[1];
     const decodedToken = await verifyToken(idToken);
     
-    const { username, displayName, bio, tagline, profilePhoto, themePreferences } = req.body;
+    const { username, displayName, bio, tagline, profilePhoto } = req.body;
     
     // Validation
     if (!username || username.length < 3) {
@@ -194,15 +188,6 @@ exports.createOrUpdateProfile = async (req, res) => {
       user.bio = bio || '';
       user.tagline = tagline || '';
       user.profilePhoto = profilePhoto || '';
-      
-      // Update theme preferences if provided
-      if (themePreferences) {
-        user.themePreferences = {
-          theme: themePreferences.theme || user.themePreferences?.theme || 'default',
-          mode: themePreferences.mode || user.themePreferences?.mode || 'dark',
-        };
-      }
-      
       await user.save();
     } else {
       // Create new user
@@ -214,7 +199,6 @@ exports.createOrUpdateProfile = async (req, res) => {
         bio: bio || '',
         tagline: tagline || '',
         profilePhoto: profilePhoto || '',
-        themePreferences: themePreferences || { theme: 'default', mode: 'dark' },
       });
       await user.save();
     }
@@ -229,7 +213,6 @@ exports.createOrUpdateProfile = async (req, res) => {
         bio: user.bio,
         tagline: user.tagline,
         profilePhoto: user.profilePhoto,
-        themePreferences: user.themePreferences,
         stats: user.stats,
         createdAt: user.createdAt,
       },
@@ -237,58 +220,5 @@ exports.createOrUpdateProfile = async (req, res) => {
   } catch (error) {
     console.error('Create/update profile error:', error);
     res.status(500).json({ error: 'Failed to update profile' });
-  }
-};
-
-/**
- * Update theme preferences only
- * POST /api/users/theme-preferences
- */
-exports.updateThemePreferences = async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'No token provided' });
-    }
-    
-    const idToken = authHeader.split('Bearer ')[1];
-    const decodedToken = await verifyToken(idToken);
-    
-    const { theme, mode } = req.body;
-    
-    // Validate theme and mode
-    const validThemes = ['default', 'halo', 'hacker', 'sunset'];
-    const validModes = ['light', 'dark'];
-    
-    if (theme && !validThemes.includes(theme)) {
-      return res.status(400).json({ error: 'Invalid theme' });
-    }
-    
-    if (mode && !validModes.includes(mode)) {
-      return res.status(400).json({ error: 'Invalid mode' });
-    }
-    
-    const user = await User.findOne({ firebaseUid: decodedToken.uid });
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    // Update theme preferences
-    user.themePreferences = {
-      theme: theme || user.themePreferences?.theme || 'default',
-      mode: mode || user.themePreferences?.mode || 'dark',
-    };
-    
-    await user.save();
-    
-    res.json({
-      message: 'Theme preferences updated successfully',
-      themePreferences: user.themePreferences,
-    });
-  } catch (error) {
-    console.error('Update theme preferences error:', error);
-    res.status(500).json({ error: 'Failed to update theme preferences' });
   }
 };

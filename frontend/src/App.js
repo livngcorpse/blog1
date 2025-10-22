@@ -23,25 +23,12 @@ import EditProfile from './pages/EditProfile';
 import Search from './pages/Search';
 import TagPosts from './pages/TagPosts';
 import Bookmarks from './pages/Bookmarks';
-import AdminDashboard from './pages/AdminDashboard';
 
-import { ThemeProvider, useTheme } from './contexts/ThemeContext';
-import './styles/themes.css';
 import './App.css';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  return (
-    <ThemeProvider>
-      <AppContent currentUser={currentUser} setCurrentUser={setCurrentUser} loading={loading} setLoading={setLoading} />
-    </ThemeProvider>
-  );
-}
-
-function AppContent({ currentUser, setCurrentUser, loading, setLoading }) {
-  const { loadUserThemePreferences } = useTheme();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -56,11 +43,6 @@ function AppContent({ currentUser, setCurrentUser, loading, setLoading }) {
           if (response.data.exists) {
             setCurrentUser(response.data);
             console.log('✅ User state set:', response.data.username);
-            
-            // Load user's theme preferences
-            if (response.data.themePreferences) {
-              loadUserThemePreferences(response.data.themePreferences);
-            }
           } else {
             // User exists in Firebase but not in database
             console.warn('⚠️ User exists in Firebase but not in database');
@@ -78,8 +60,7 @@ function AppContent({ currentUser, setCurrentUser, loading, setLoading }) {
     });
 
     return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadUserThemePreferences]);
+  }, []);
 
   if (loading) {
     return (
@@ -91,9 +72,9 @@ function AppContent({ currentUser, setCurrentUser, loading, setLoading }) {
   }
 
   return (
-      <ErrorBoundary>
-        <Router>
-          <div className="App">
+    <ErrorBoundary>
+      <Router>
+        <div className="App">
           <Navbar user={currentUser} />
           <EmailVerificationBanner />
           
@@ -149,16 +130,6 @@ function AppContent({ currentUser, setCurrentUser, loading, setLoading }) {
                   )
                 }
               />
-              <Route
-                path="/admin"
-                element={
-                  currentUser?.isAdmin ? (
-                    <AdminDashboard currentUser={currentUser} />
-                  ) : (
-                    <Navigate to="/" />
-                  )
-                }
-              />
               
               {/* 404 */}
               <Route path="*" element={<NotFound />} />
@@ -187,9 +158,9 @@ function AppContent({ currentUser, setCurrentUser, loading, setLoading }) {
               },
             }}
           />
-          </div>
-        </Router>
-      </ErrorBoundary>
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

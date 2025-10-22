@@ -11,7 +11,6 @@ router.get('/author/:username', postController.getPostsByAuthor);
 
 // Optional auth (for hasLiked flag)
 router.get('/:id', optionalAuth, postController.getPostById);
-router.get('/:id/related', postController.getRelatedPosts);
 
 // Protected routes
 router.post('/', authMiddleware, postController.createPost);

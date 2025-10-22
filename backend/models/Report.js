@@ -36,10 +36,6 @@ const reportSchema = new mongoose.Schema({
   reviewedAt: {
     type: Date,
   },
-  adminNote: {
-    type: String,
-    maxlength: 500,
-  },
 }, {
   timestamps: true,
 });

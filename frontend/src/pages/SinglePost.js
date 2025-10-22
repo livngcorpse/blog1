@@ -6,7 +6,6 @@ import ReplyForm from '../components/ReplyForm';
 import ReplyThread from '../components/ReplyThread';
 import SocialShare from '../components/SocialShare';
 import ReportModal from '../components/ReportModal';
-import RelatedPosts from '../components/RelatedPosts';
 import toast from 'react-hot-toast';
 import './SinglePost.css';
 
@@ -326,9 +325,6 @@ const SinglePost = ({ currentUser }) => {
           </div>
         )}
       </section>
-
-      {/* Related Posts Section */}
-      <RelatedPosts postId={id} />
     </div>
   );
 };

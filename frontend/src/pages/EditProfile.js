@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userAPI } from '../services/api';
 import UserAvatar from '../components/UserAvatar';
-import { useTheme } from '../contexts/ThemeContext';
 import toast from 'react-hot-toast';
 import './EditProfile.css';
 
 const EditProfile = ({ currentUser }) => {
-  const { mode, theme, toggleMode, changeTheme } = useTheme();
   const [formData, setFormData] = useState({
     username: '',
     displayName: '',
@@ -57,16 +55,7 @@ const EditProfile = ({ currentUser }) => {
 
     setLoading(true);
     try {
-      // Include theme preferences in the update
-      const updateData = {
-        ...formData,
-        themePreferences: {
-          theme,
-          mode,
-        },
-      };
-      
-      await userAPI.createOrUpdateProfile(updateData);
+      await userAPI.createOrUpdateProfile(formData);
       toast.success('Profile updated successfully!');
       navigate(`/user/${formData.username}`);
     } catch (error) {
@@ -153,62 +142,6 @@ const EditProfile = ({ currentUser }) => {
               placeholder="https://example.com/photo.jpg"
             />
             <small>Enter a URL to your profile picture</small>
-          </div>
-
-          <div className="form-section-divider">
-            <h3>🎨 Theme Preferences</h3>
-          </div>
-
-          <div className="form-group">
-            <label>Theme</label>
-            <div className="theme-options">
-              <button
-                type="button"
-                className={`theme-option ${theme === 'default' ? 'active' : ''}`}
-                onClick={() => changeTheme('default')}
-              >
-                <span className="theme-icon">🎨</span>
-                <span>Default</span>
-              </button>
-              <button
-                type="button"
-                className={`theme-option ${theme === 'halo' ? 'active' : ''}`}
-                onClick={() => changeTheme('halo')}
-              >
-                <span className="theme-icon">🌌</span>
-                <span>Halo</span>
-              </button>
-              <button
-                type="button"
-                className={`theme-option ${theme === 'hacker' ? 'active' : ''}`}
-                onClick={() => changeTheme('hacker')}
-              >
-                <span className="theme-icon">💻</span>
-                <span>Hacker</span>
-              </button>
-              <button
-                type="button"
-                className={`theme-option ${theme === 'sunset' ? 'active' : ''}`}
-                onClick={() => changeTheme('sunset')}
-              >
-                <span className="theme-icon">🌅</span>
-                <span>Sunset</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label>Mode</label>
-            <div className="mode-toggle">
-              <button
-                type="button"
-                className="mode-toggle-btn"
-                onClick={toggleMode}
-              >
-                {mode === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
-              </button>
-              <small>Current: <strong>{mode === 'dark' ? 'Dark' : 'Light'}</strong></small>
-            </div>
           </div>
 
           <div className="form-actions">

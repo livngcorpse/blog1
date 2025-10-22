@@ -42,7 +42,6 @@ export const userAPI = {
   getUserStats: (username) => api.get(`/users/${username}/stats`),
   getCurrentUser: () => api.post('/users/current'),
   createOrUpdateProfile: (data) => api.post('/users/profile', data),
-  updateThemePreferences: (preferences) => api.post('/users/theme-preferences', preferences),
 };
 
 // ============ POST API ============
@@ -52,7 +51,6 @@ export const postAPI = {
   getPostsByTag: (tag, params) => api.get(`/posts/tag/${tag}`, { params }),
   getPostsByAuthor: (username, params) => api.get(`/posts/author/${username}`, { params }),
   getPostById: (id) => api.get(`/posts/${id}`),
-  getRelatedPosts: (id, limit = 4) => api.get(`/posts/${id}/related`, { params: { limit } }),
   createPost: (data) => api.post('/posts', data),
   updatePost: (id, data) => api.put(`/posts/${id}`, data),
   deletePost: (id) => api.delete(`/posts/${id}`),
@@ -72,8 +70,6 @@ export const reportAPI = {
   createReport: (data) => api.post('/reports', data),
   getMyReports: () => api.get('/reports/my-reports'),
   getAllReports: (params) => api.get('/reports', { params }),
-  updateReportStatus: (id, data) => api.put(`/reports/${id}`, data),
-  deleteReport: (id) => api.delete(`/reports/${id}`),
 };
 
 // ============ BOOKMARK API ============
