@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserAvatar from './UserAvatar';
 import ReplyForm from './ReplyForm';
+import MentionText from './MentionText';
 import './ReplyThread.css';
 
 const ReplyThread = ({ reply, currentUser, onReply, onLike, onDelete, level = 0 }) => {
@@ -60,7 +61,7 @@ const ReplyThread = ({ reply, currentUser, onReply, onLike, onDelete, level = 0 
         </div>
 
         <div className="reply-content">
-          <p>{reply.content}</p>
+          <MentionText text={reply.content} />
         </div>
 
         <div className="reply-actions">

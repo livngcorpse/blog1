@@ -40,6 +40,11 @@ const Navbar = ({ user }) => {
               <Link to="/bookmarks" className="nav-link">
                 Bookmarks
               </Link>
+              {user.isAdmin && (
+                <Link to="/admin" className="nav-link">
+                  🛡️ Admin
+                </Link>
+              )}
               <Link to={`/user/${user.username}`} className="nav-link">
                 Profile
               </Link>

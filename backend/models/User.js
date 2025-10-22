@@ -43,6 +43,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  themePreferences: {
+    theme: {
+      type: String,
+      enum: ['default', 'halo', 'hacker', 'sunset'],
+      default: 'default',
+    },
+    mode: {
+      type: String,
+      enum: ['light', 'dark'],
+      default: 'dark',
+    },
+  },
   stats: {
     posts: { type: Number, default: 0 },
     replies: { type: Number, default: 0 },

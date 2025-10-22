@@ -96,3 +96,64 @@ exports.getMyReports = async (req, res) => {
     res.status(500).json({ error: 'Failed to get your reports' });
   }
 };
+
+/**
+ * Update report status (admin only)
+ * PUT /api/reports/:id
+ */
+exports.updateReportStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, adminNote } = req.body;
+
+    if (!status || !['pending', 'reviewed', 'resolved', 'dismissed'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const report = await Report.findById(id);
+
+    if (!report) {
+      return res.status(404).json({ error: 'Report not found' });
+    }
+
+    report.status = status;
+    report.reviewedBy = req.user.id;
+    report.reviewedAt = new Date();
+    if (adminNote) {
+      report.adminNote = adminNote;
+    }
+
+    await report.save();
+    await report.populate('reportedBy', 'username displayName');
+    await report.populate('reviewedBy', 'username displayName');
+
+    res.json({
+      message: 'Report status updated',
+      report,
+    });
+  } catch (error) {
+    console.error('Update report status error:', error);
+    res.status(500).json({ error: 'Failed to update report' });
+  }
+};
+
+/**
+ * Delete report (admin only)
+ * DELETE /api/reports/:id
+ */
+exports.deleteReport = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const report = await Report.findByIdAndDelete(id);
+
+    if (!report) {
+      return res.status(404).json({ error: 'Report not found' });
+    }
+
+    res.json({ message: 'Report deleted successfully' });
+  } catch (error) {
+    console.error('Delete report error:', error);
+    res.status(500).json({ error: 'Failed to delete report' });
+  }
+};

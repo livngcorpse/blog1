@@ -1,32 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { postAPI } from '../services/api';
 import PostCard from '../components/PostCard';
 import TrendingTags from '../components/TrendingTags';
+import useInfiniteScroll from '../hooks/useInfiniteScroll';
 import toast from 'react-hot-toast';
 import './Home.css';
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 0 });
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [filter, setFilter] = useState('recent');
+  const LIMIT = 10;
 
+  // Fetch initial posts
   useEffect(() => {
-    fetchPosts();
-  }, [pagination.page, filter]);
+    fetchInitialPosts();
+  }, [filter]);
 
-  const fetchPosts = async () => {
+  const fetchInitialPosts = async () => {
     setLoading(true);
+    setPosts([]);
+    setCurrentPage(1);
+    setHasMore(true);
+
     try {
       const params = {
-        page: pagination.page,
-        limit: pagination.limit,
+        page: 1,
+        limit: LIMIT,
         sort: filter === 'popular' ? '-likesCount' : '-createdAt',
       };
       
       const response = await postAPI.getPosts(params);
       setPosts(response.data.posts);
-      setPagination(response.data.pagination);
+      setHasMore(response.data.pagination.page < response.data.pagination.pages);
     } catch (error) {
       toast.error('Failed to load posts');
       console.error('Error fetching posts:', error);
@@ -35,10 +44,32 @@ const Home = () => {
     }
   };
 
-  const handlePageChange = (newPage) => {
-    setPagination({ ...pagination, page: newPage });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const fetchMorePosts = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+    const nextPage = currentPage + 1;
+
+    try {
+      const params = {
+        page: nextPage,
+        limit: LIMIT,
+        sort: filter === 'popular' ? '-likesCount' : '-createdAt',
+      };
+      
+      const response = await postAPI.getPosts(params);
+      setPosts((prevPosts) => [...prevPosts, ...response.data.posts]);
+      setCurrentPage(nextPage);
+      setHasMore(response.data.pagination.page < response.data.pagination.pages);
+    } catch (error) {
+      toast.error('Failed to load more posts');
+      console.error('Error fetching more posts:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [currentPage, hasMore, loadingMore, filter]);
+
+  const { lastElementRef } = useInfiniteScroll(fetchMorePosts, hasMore, loadingMore);
 
   return (
     <div className="home-container">
@@ -71,32 +102,29 @@ const Home = () => {
         ) : (
           <>
             <div className="posts-list">
-              {posts.map((post) => (
-                <PostCard key={post._id} post={post} />
-              ))}
+              {posts.map((post, index) => {
+                // Attach ref to the last element
+                if (posts.length === index + 1) {
+                  return (
+                    <div key={post._id} ref={lastElementRef}>
+                      <PostCard post={post} />
+                    </div>
+                  );
+                }
+                return <PostCard key={post._id} post={post} />;
+              })}
             </div>
 
-            {pagination.pages > 1 && (
-              <div className="pagination">
-                <button
-                  className="page-btn"
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={pagination.page === 1}
-                >
-                  Previous
-                </button>
-                
-                <span className="page-info">
-                  Page {pagination.page} of {pagination.pages}
-                </span>
-                
-                <button
-                  className="page-btn"
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page === pagination.pages}
-                >
-                  Next
-                </button>
+            {loadingMore && (
+              <div className="loading-more">
+                <div className="loading-spinner"></div>
+                <p>Loading more posts...</p>
+              </div>
+            )}
+
+            {!hasMore && posts.length > 0 && (
+              <div className="end-of-posts">
+                <p>🎉 You've reached the end!</p>
               </div>
             )}
           </>

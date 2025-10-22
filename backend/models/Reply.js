@@ -21,6 +21,11 @@ const replySchema = new mongoose.Schema({
     required: true,
     maxlength: 2000,
   },
+  mentions: [{
+    type: String,
+    trim: true,
+    lowercase: true,
+  }],
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

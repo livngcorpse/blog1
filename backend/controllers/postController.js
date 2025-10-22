@@ -3,6 +3,7 @@ const Reply = require('../models/Reply');
 const User = require('../models/User');
 const generateExcerpt = require('../utils/excerptGenerator');
 const calculateReadingTime = require('../utils/readingTime');
+const extractMentions = require('../utils/extractMentions');
 
 /**
  * Get all posts with pagination, filtering, and search
@@ -203,6 +204,9 @@ exports.createPost = async (req, res) => {
     const excerpt = generateExcerpt(content);
     const readingTime = calculateReadingTime(content);
     
+    // Extract mentions from title and content
+    const mentions = extractMentions(`${title} ${content}`);
+    
     // Process tags
     const processedTags = tags ? tags.map(tag => tag.toLowerCase().trim()).filter(tag => tag) : [];
     
@@ -212,6 +216,7 @@ exports.createPost = async (req, res) => {
       excerpt,
       authorId: req.user.id,
       tags: processedTags,
+      mentions,
       readingTime,
     });
     
@@ -293,6 +298,8 @@ exports.updatePost = async (req, res) => {
       post.content = content;
       post.excerpt = generateExcerpt(content);
       post.readingTime = calculateReadingTime(content);
+      // Update mentions
+      post.mentions = extractMentions(`${post.title} ${content}`);
     }
     if (tags) {
       post.tags = tags.map(tag => tag.toLowerCase().trim()).filter(tag => tag);
@@ -340,5 +347,41 @@ exports.deletePost = async (req, res) => {
   } catch (error) {
     console.error('Delete post error:', error);
     res.status(500).json({ error: 'Failed to delete post' });
+  }
+};
+
+/**
+ * Get related posts based on shared tags
+ * GET /api/posts/:id/related
+ */
+exports.getRelatedPosts = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const limit = parseInt(req.query.limit) || 4;
+    
+    const post = await Post.findById(id);
+    
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    
+    // If post has no tags, return empty array
+    if (!post.tags || post.tags.length === 0) {
+      return res.json([]);
+    }
+    
+    // Find posts with shared tags, excluding the current post
+    const relatedPosts = await Post.find({
+      _id: { $ne: id },
+      tags: { $in: post.tags }
+    })
+      .populate('authorId', 'username displayName profilePhoto')
+      .sort({ likesCount: -1, createdAt: -1 }) // Sort by popularity then recency
+      .limit(limit);
+    
+    res.json(relatedPosts);
+  } catch (error) {
+    console.error('Get related posts error:', error);
+    res.status(500).json({ error: 'Failed to get related posts' });
   }
 };
