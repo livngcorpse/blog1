@@ -32,9 +32,3 @@ serviceAccountKey.json
 # Misc
 coverage/
 .cache/
-
-FEATURES_SUMMARY.md
-FIXES_APPLIED.md
-NEW_FEATURES.md
-QUICK_REFERENCE.md
-README_UPDATE_SUMMARY.md
