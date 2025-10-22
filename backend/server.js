@@ -1,5 +1,4 @@
 require('dotenv').config();
-require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -11,8 +10,6 @@ const { limiter } = require('./middlewares/rateLimiter');
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const replyRoutes = require('./routes/replyRoutes');
-const reportRoutes = require('./routes/reportRoutes');
-const bookmarkRoutes = require('./routes/bookmarkRoutes');
 
 // Initialize Express app
 const app = express();
@@ -48,8 +45,6 @@ app.get('/health', (req, res) => {
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/replies', replyRoutes);
-app.use('/api/reports', reportRoutes);
-app.use('/api/bookmarks', bookmarkRoutes);
 
 // 404 handler
 app.use((req, res) => {

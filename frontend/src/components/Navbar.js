@@ -8,9 +8,6 @@ import './Navbar.css';
 const Navbar = ({ user }) => {
   const navigate = useNavigate();
 
-  // Debug: Log user state
-  console.log('🧐 Navbar - Current user:', user ? user.username : 'Not logged in');
-
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -36,9 +33,6 @@ const Navbar = ({ user }) => {
             <>
               <Link to="/create-post" className="nav-link nav-btn-primary">
                 Create Post
-              </Link>
-              <Link to="/bookmarks" className="nav-link">
-                Bookmarks
               </Link>
               <Link to={`/user/${user.username}`} className="nav-link">
                 Profile

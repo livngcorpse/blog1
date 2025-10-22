@@ -65,18 +65,4 @@ export const replyAPI = {
   deleteReply: (id) => api.delete(`/replies/${id}`),
 };
 
-// ============ REPORT API ============
-export const reportAPI = {
-  createReport: (data) => api.post('/reports', data),
-  getMyReports: () => api.get('/reports/my-reports'),
-  getAllReports: (params) => api.get('/reports', { params }),
-};
-
-// ============ BOOKMARK API ============
-export const bookmarkAPI = {
-  toggleBookmark: (postId) => api.post(`/bookmarks/${postId}`),
-  getBookmarks: (params) => api.get('/bookmarks', { params }),
-  checkBookmark: (postId) => api.get(`/bookmarks/check/${postId}`),
-};
-
 export default api;

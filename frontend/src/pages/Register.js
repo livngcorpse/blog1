@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { userAPI } from '../services/api';
 import toast from 'react-hot-toast';
@@ -55,14 +55,11 @@ const Register = () => {
       // Create Firebase user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Send email verification
-      await sendEmailVerification(userCredential.user);
-      
       // Get ID token
       const idToken = await userCredential.user.getIdToken();
       
       // Create profile in database
-      const profileResponse = await userAPI.createOrUpdateProfile({
+      await userAPI.createOrUpdateProfile({
         username: username.toLowerCase(),
         displayName,
         bio: '',
@@ -70,13 +67,8 @@ const Register = () => {
         profilePhoto: '',
       });
 
-      console.log('Profile created:', profileResponse.data);
-      toast.success('Account created! Please check your email to verify your account.');
-      
-      // Wait a moment for auth state to update
-      setTimeout(() => {
-        navigate('/');
-      }, 500);
+      toast.success('Account created successfully!');
+      navigate('/');
     } catch (error) {
       console.error('Registration error:', error);
       

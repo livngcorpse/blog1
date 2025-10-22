@@ -104,57 +104,6 @@
   text-decoration: underline;
 }
 
-.forgot-password-link {
-  text-align: center;
-  margin-top: 1rem;
-}
-
-.forgot-password-link a {
-  color: #667eea;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.forgot-password-link a:hover {
-  text-decoration: underline;
-}
-
-.success-message {
-  text-align: center;
-  padding: 2rem 0;
-}
-
-.success-message .icon {
-  font-size: 4rem;
-  display: block;
-  margin-bottom: 1rem;
-}
-
-.success-message h1 {
-  margin-bottom: 1rem;
-}
-
-.success-message p {
-  color: #718096;
-  margin-bottom: 0.5rem;
-}
-
-.back-to-login {
-  display: inline-block;
-  margin-top: 2rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: 600;
-}
-
-.back-to-login:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
 @media (max-width: 768px) {
   .auth-card {
     padding: 2rem 1.5rem;

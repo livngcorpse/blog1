@@ -10,12 +10,6 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
-// Verify Firebase configuration is loaded
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  console.error('❌ Firebase configuration missing! Make sure .env file exists and restart the dev server.');
-  console.log('Current config:', firebaseConfig);
-}
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
