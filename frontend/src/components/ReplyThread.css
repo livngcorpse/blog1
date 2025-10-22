@@ -1,0 +1,161 @@
+.reply-thread {
+  margin-bottom: 1rem;
+}
+
+.reply-container {
+  background: white;
+  border-left: 3px solid #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.reply-container:hover {
+  border-left-color: #667eea;
+  background: #fafbfc;
+}
+
+.reply-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.reply-author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.reply-author-name {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 0.95rem;
+}
+
+.reply-username {
+  color: #667eea;
+  font-size: 0.9rem;
+}
+
+.reply-date {
+  color: #a0aec0;
+  font-size: 0.85rem;
+}
+
+.reply-content {
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+.reply-content p {
+  margin: 0;
+  color: #4a5568;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.reply-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  background: transparent;
+  border: none;
+  color: #718096;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.action-btn:hover:not(:disabled) {
+  background: #edf2f7;
+  color: #667eea;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-btn .icon {
+  font-size: 1rem;
+}
+
+.action-btn.liked {
+  color: #e53e3e;
+}
+
+.delete-btn:hover:not(:disabled) {
+  color: #e53e3e;
+  background: #fff5f5;
+}
+
+.collapse-btn {
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.reply-children {
+  margin-left: 1.5rem;
+  margin-top: 1rem;
+  padding-left: 1rem;
+  border-left: 2px solid #e2e8f0;
+}
+
+/* Different indentation levels */
+.reply-thread.level-0 .reply-container {
+  border-left-width: 3px;
+}
+
+.reply-thread.level-1 .reply-container {
+  border-left-color: #cbd5e0;
+}
+
+.reply-thread.level-2 .reply-container {
+  border-left-color: #a0aec0;
+}
+
+.reply-thread.level-3 .reply-container {
+  border-left-color: #718096;
+}
+
+.reply-thread.level-4 .reply-container {
+  border-left-color: #4a5568;
+}
+
+.reply-thread.level-5 .reply-container {
+  border-left-color: #2d3748;
+}
+
+@media (max-width: 768px) {
+  .reply-children {
+    margin-left: 0.75rem;
+    padding-left: 0.5rem;
+  }
+  
+  .reply-container {
+    padding: 0.75rem;
+  }
+  
+  .reply-actions {
+    gap: 0.5rem;
+  }
+  
+  .action-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+  }
+}
